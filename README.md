@@ -1,0 +1,2 @@
+# E-commerce-Flask-Mega-App
+E commerce evolution , revolutionized the world and hence we are in the front of the line too. This is a mega e commerce app ready to deploy with minor changes . This project was carried out to introduce the intermediate python based developers to work on something big. This project will definitely help you out to understand flask in a better and deep way. This includes  lots of features. So, Thanks and have fun..
