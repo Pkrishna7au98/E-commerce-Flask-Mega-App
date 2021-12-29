@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block content%}
+ 
+<div class="text-center h1 text-danger mt-4">Login</div>
+<div class="container">
+    <div class="row mt-8">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+    
+            {% from "_formhelpers.html" import render_field %}
+            <form method='post' enctype="multipart/form-data">
+                {{ form.csrf_token }}
+            <dl>
+                {{ render_field(form.email, class="form-control") }}
+                {{ render_field(form.password, class="form-control") }}
+            </dl>
+            
+            <p><input type=submit value=Login class="btn btn-info mt-2"></p>
+            </form>
+            {% include '_messages.html' %}
+        </div>
+    </div>
+    <div class="col-md-4"></div>
+
+</div>
+
+{% endblock content %}

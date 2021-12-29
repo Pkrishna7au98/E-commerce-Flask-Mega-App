@@ -1,0 +1,139 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<style>
+    input[type="number"] {
+        width:60px;
+    }
+</style>
+<!-- Navbar Starts  here-->
+
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">Home</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/">All Products</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                Brands
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  {% for brand in brands %}
+                  <a class="dropdown-item" href="{{url_for('get_brand' , id = brand.id)}}">{{brand.name}}</a>
+                  {% endfor %}
+              </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                  Categories
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    {% for category in categories %}
+                    <a class="dropdown-item" href="{{url_for('get_category' , id = category.id)}}">{{category.name}}</a>
+                    {% endfor %}
+                </div>
+              </li>
+            <li class="nav-item">
+                <a class="nav-link " href="{{url_for('getCart')}}" tabindex="-1" >Cart({{session['Shoppingcart']|length}})</a>
+            </li>
+          </ul>
+          <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+          </form>
+        </div>
+      </nav>
+    </div>
+    
+    <!-- Navbar Ends  here-->
+
+    {% include "_messages.html" %}
+<div class="container mt-4">
+    <div class="row">
+        Name : {{customer.name}}
+        <br>
+        Email : {{customer.email}}
+        <br>
+        Invoice id : {{orders.invoice}}
+        <br>
+        Payment Status : {{orders.status}}
+        <br>
+        <br>
+      <div class="col-md-12">
+        <table class="table table-sm">
+            <thead>
+                <th>Sr</th>
+                <th>Name</th>
+                <th>Color</th>
+                <th>Price (INR)</th>
+                <th class="col-1">Qty</th>
+                <th>Discount (INR)</th>
+                <th>Subtotal (INR)</th>
+
+            </thead>
+            <tbody>
+                {% for key, product in orders.orders.items() %}
+                <tr>
+                    <td>{{loop.index}}</td>
+
+                    <td>{{product.name}}</td>
+                    <td>{{product.color}}</td>
+                <form action="{{url_for('updatecart', code=key)}}" method="post">
+   
+                    <td>{{product.price}}</td>
+                    <td><input size="4" type="number" name="quantity" value="{{product.quantity}}" min="1" max="{{product.stock}}"></td>
+                    {% if product.discount > 0 %}
+                    <td>{{product.quantity|int * product.discount}}</td>
+                    {% else %}
+                    <td>NIL</td>
+                    {% endif %}
+                    {% set subtotal = product.quantity|int * (product.price|float - product.discount) %}
+                    <td>{{subTotal}}</td>
+                </form>
+                    <td></td>
+                </tr>
+                {% endfor %}
+                <table class="table table-sm">
+                <tr>
+                    <td></td>
+                    <td><form action="{{url_for('payment')}}" method="POST">
+                      {% set amount = grandTotal.replace('.','') %}
+                      <input type="hidden" name="amount" value="{{amount}}">
+                      <input type="hidden" name="invoice" value="{{orders.invoice}}">
+                      <script
+                        src="https://checkout.stripe.com/checkout.js"
+                        class="stripe-button"
+                        data-key="pk_test_51KBwqGSJIvndp4WyZfaHxqt9lVxqjVGBXyqYldk4OFUwHXsVddBqRSEiXIMWWbYHLWDWOuYwOPm0CPkoYD00Aoio00TvI9m5Gt"
+                        data-name="Payment"
+                        data-description="Enter your Card Details to make payment"
+                        data-amount="{{amount}}"
+                        data-currency="inr">
+                      </script>
+                    </form></td>
+                    <td colspan="3"><h5>Tax : {{tax}} INR</h5></td>
+                    <td colspan="3"><h5> Total : {{grandTotal}} INR</h5></td>
+                    <td>
+                      <form action="{{url_for('get_pdf', invoice = orders.invoice)}}" method="post" target="#">
+                        <button type="submit">Click here to print Invoice</button>
+                      </td>
+                    </form>
+
+                </tr>
+            </table>
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+
+{% endblock content %}
